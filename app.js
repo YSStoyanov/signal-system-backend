@@ -1,15 +1,18 @@
-require('dotenv').config();
 const express = require('express');
-const bodyParser = require('body-parser');
 const { Pool } = require('pg');
+require('dotenv').config();
 
 const app = express();
-app.use(bodyParser.json());
 
-// PostgreSQL configuration
+// Middleware
+app.use(express.json());
+
+// PostgreSQL Pool
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false },
+    connectionString: process.env.DATABASE_URL, // използвайте променливата от .env файла
+    ssl: {
+        rejectUnauthorized: false, // само ако е необходимо за Railway
+    },
 });
 
 // API Routes
@@ -35,6 +38,13 @@ app.get('/signals', async (req, res) => {
     }
 });
 
+// Root Route
+app.get('/', (req, res) => {
+    res.send('Welcome to the Signal System API!');
+});
+
 // Start the server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
